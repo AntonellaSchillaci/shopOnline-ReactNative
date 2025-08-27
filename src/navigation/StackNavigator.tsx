@@ -32,6 +32,7 @@ const StackNavigator: React.FC = () => {
           headerTitle: 'Shop Online',
           headerStyle: styles.header,
           headerTintColor: '#fff',
+          // eslint-disable-next-line react/no-unstable-nested-components
           headerRight: () => (
             <View style={styles.headerButtons}>
               <TouchableOpacity
