@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, FlatList, ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ProductCard from '../components/ProductCard';
@@ -6,21 +6,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/StackNavigator';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-type Product = {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-};
+import { Product } from '../types';
+import { CartContext } from '../context/CartContext';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 const HomeScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState<Product[]>([]); 
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const { cart, addToCart } = useContext(CartContext);
 
   useEffect(() => {
     fetch('https://fakestoreapi.com/products')
@@ -35,10 +30,6 @@ const HomeScreen: React.FC = () => {
       });
   }, []);
 
-  const addToCart = (product: Product) => {
-    setCart(prev => [...prev, product]);
-  };
-
   if (loading) {
     return (
       <View style={styles.center}>
@@ -51,9 +42,9 @@ const HomeScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Shop Online</Text>
-        <TouchableOpacity onPress={() => console.log('Apri carrello')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
           <View>
-            <Ionicons name="cart" size={28} color="#fff" />
+            <Ionicons name="ios-cart" size={28} color="#fff" />
             {cart.length > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{cart.length}</Text>
@@ -63,7 +54,7 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Lista prodotti */}
+
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
@@ -72,14 +63,13 @@ const HomeScreen: React.FC = () => {
             title={item.title}
             price={item.price}
             image={item.image}
-            onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+            onPress={() => console.log('Apri dettaglio prodotto')}
           >
-            {/* Pulsante aggiungi al carrello */}
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => addToCart(item)}
             >
-              <Ionicons name="cart-outline" size={18} color="#fff" />
+              <Ionicons name="cart" size={21} color="#fff" />
               <Text style={styles.addButtonText}>Aggiungi</Text>
             </TouchableOpacity>
           </ProductCard>

@@ -1,16 +1,14 @@
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import StackNavigator from './src/navigation/StackNavigator';
+import { CartProvider } from './src/context/CartContext';
 
-const App: React.FC = () => {
+export default function App() {
   return (
-    <SafeAreaProvider>
+    <CartProvider>
       <NavigationContainer>
         <StackNavigator />
       </NavigationContainer>
-    </SafeAreaProvider>
+    </CartProvider>
   );
-};
-
-export default App;
+}
