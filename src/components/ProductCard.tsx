@@ -6,15 +6,18 @@ type ProductCardProps = {
   price: number;
   image: string;
   onPress?: () => void;
+  children?: React.ReactNode;
+
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({ title, price, image, onPress }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ title, price, image, onPress, children }) => {
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={onPress}>
       <Image source={{ uri: image }} style={styles.image} />
       <View style={styles.info}>
         <Text style={styles.title} numberOfLines={2}>{title}</Text>
         <Text style={styles.price}>💰 {price.toFixed(2)} $</Text>
+        {children}
       </View>
     </TouchableOpacity>
   );
