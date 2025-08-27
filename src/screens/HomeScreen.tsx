@@ -40,6 +40,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Shop Online</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
@@ -54,7 +55,7 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-
+      {/* LISTA PRODOTTI */}
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
@@ -63,7 +64,7 @@ const HomeScreen: React.FC = () => {
             title={item.title}
             price={item.price}
             image={item.image}
-            onPress={() => console.log('Apri dettaglio prodotto')}
+            onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
           >
             <TouchableOpacity
               style={styles.addButton}

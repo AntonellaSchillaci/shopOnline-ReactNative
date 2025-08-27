@@ -1,28 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ActivityIndicator, StyleSheet } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, Image, ActivityIndicator, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/StackNavigator';
+import { CartContext } from '../context/CartContext';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-type Product = {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
+type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
+
+type Props = {
+  route: ProductDetailRouteProp;
 };
-
-type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
 
 const ProductDetailScreen: React.FC<Props> = ({ route }) => {
   const { productId } = route.params;
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     fetch(`https://fakestoreapi.com/products/${productId}`)
       .then(res => res.json())
-      .then((data: Product) => {
+      .then(data => {
         setProduct(data);
         setLoading(false);
       })
@@ -40,27 +38,79 @@ const ProductDetailScreen: React.FC<Props> = ({ route }) => {
     );
   }
 
-  if (!product) return null;
+  if (!product) {
+    return (
+      <View style={styles.center}>
+        <Text>Prodotto non trovato.</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: product.image }} style={styles.image} />
+    <ScrollView contentContainerStyle={styles.container}>
+      <Image source={{ uri: product.image }} style={styles.image} resizeMode="contain" />
       <Text style={styles.title}>{product.title}</Text>
-      <Text style={styles.price}>💰 {product.price.toFixed(2)} $</Text>
-      <Text style={styles.category}>Category: {product.category}</Text>
+      <Text style={styles.price}>$ {product.price}</Text>
       <Text style={styles.description}>{product.description}</Text>
-    </View>
+
+      <TouchableOpacity 
+        style={styles.addButton} 
+        onPress={() => addToCart(product)}
+      >
+        <Ionicons name="cart" size={21} color="#fff" />
+        <Text style={styles.addButtonText}>Aggiungi al carrello</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  container: { flex: 1, padding: 16 },
-  image: { width: '100%', height: 250, resizeMode: 'contain', marginBottom: 16 },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
-  price: { fontSize: 18, fontWeight: '600', color: '#007AFF', marginBottom: 12 },
-  description: { fontSize: 16, color: '#333' },
-  category: { fontSize: 14, fontStyle: 'italic', color: '#666', marginBottom: 12 },
+  container: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: 200,
+    height: 250,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  price: {
+    fontSize: 18,
+    color: '#007AFF',
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  description: {
+    fontSize: 14,
+    textAlign: 'justify',
+    marginBottom: 20,
+    color: '#555',
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  addButtonText: {
+    color: '#fff',
+    marginLeft: 6,
+    fontWeight: 'bold',
+  },
 });
 
 export default ProductDetailScreen;
