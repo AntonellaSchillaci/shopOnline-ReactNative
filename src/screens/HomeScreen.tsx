@@ -44,7 +44,7 @@ const HomeScreen: React.FC = () => {
         <Text style={styles.headerTitle}>Shop Online</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
           <View>
-            <Ionicons name="ios-cart" size={28} color="#fff" />
+            <Ionicons name="cart" size={28} color="#fff" />
             {cart.length > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{cart.length}</Text>
