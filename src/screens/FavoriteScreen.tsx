@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
   },
-  image: { width: 80, height: 80, backgroundColor: '#f9f9f9' },
+  image: { width: 80, height: 80, resizeMode: 'contain'},
   info: { flex: 1, paddingHorizontal: 12 },
   name: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
   price: { fontSize: 14, fontWeight: 'bold', color: '#007AFF' },
