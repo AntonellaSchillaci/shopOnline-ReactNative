@@ -3,7 +3,9 @@ import { View, Text, Image, ActivityIndicator, StyleSheet, TouchableOpacity, Scr
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/StackNavigator';
 import { CartContext } from '../context/CartContext';
+import { FavoritesContext } from '../context/FavoritesContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Product } from '../types';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 
@@ -13,14 +15,16 @@ type Props = {
 
 const ProductDetailScreen: React.FC<Props> = ({ route }) => {
   const { productId } = route.params;
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+
   const { addToCart } = useContext(CartContext);
+  const { addToFavorites, removeFromFavorites, isFavorite } = useContext(FavoritesContext);
 
   useEffect(() => {
     fetch(`https://fakestoreapi.com/products/${productId}`)
       .then(res => res.json())
-      .then(data => {
+      .then((data: Product) => {
         setProduct(data);
         setLoading(false);
       })
@@ -46,6 +50,14 @@ const ProductDetailScreen: React.FC<Props> = ({ route }) => {
     );
   }
 
+  const toggleFavorite = () => {
+    if (isFavorite(product.id)) {
+      removeFromFavorites(product.id);
+    } else {
+      addToFavorites(product);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={{ uri: product.image }} style={styles.image} resizeMode="contain" />
@@ -53,13 +65,23 @@ const ProductDetailScreen: React.FC<Props> = ({ route }) => {
       <Text style={styles.price}>$ {product.price}</Text>
       <Text style={styles.description}>{product.description}</Text>
 
-      <TouchableOpacity 
-        style={styles.addButton} 
-        onPress={() => addToCart(product)}
-      >
-        <Ionicons name="cart" size={21} color="#fff" />
-        <Text style={styles.addButtonText}>Aggiungi al carrello</Text>
-      </TouchableOpacity>
+      <View style={styles.actionsRow}>
+        <TouchableOpacity style={styles.favoriteButton} onPress={toggleFavorite}>
+          <Ionicons
+            name={isFavorite(product.id) ? 'heart' : 'heart-outline'}
+            size={24}
+            color={isFavorite(product.id) ? 'red' : '#333'}
+          />
+          <Text style={styles.favoriteText}>
+            {isFavorite(product.id) ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.addButton} onPress={() => addToCart(product)}>
+          <Ionicons name="cart" size={21} color="#fff" />
+          <Text style={styles.addButtonText}>Aggiungi al carrello</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -97,14 +119,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#555',
   },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 12,
+  },
+  favoriteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+  },
+  favoriteText: {
+    marginLeft: 6,
+    fontWeight: 'bold',
+    color: '#007AFF',
+  },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#007AFF',
     borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   addButtonText: {
     color: '#fff',
