@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { CartContext } from '../context/CartContext';
-import { Product } from '../types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const CartScreen: React.FC = () => {
